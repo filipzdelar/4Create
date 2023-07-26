@@ -15,8 +15,8 @@ namespace _4Create.Data
             base.OnModelCreating(modelBuilder);
 
 
-            modelBuilder.Entity<Employee>().ToTable("Tests");
-            modelBuilder.Entity<Company>().ToTable("Attempts");
+            //modelBuilder.Entity<Employee>().ToTable("Tests");
+            //modelBuilder.Entity<Company>().ToTable("Attempts");
 
         }
     }
