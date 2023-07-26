@@ -6,7 +6,7 @@
         /// <summary>
         /// Data will represent time when each instance has been created.
         /// </summary>
-        DateTime CreatedAt { get; set; }
+        //DateTime CreatedAt { get; set; }
         #endregion
     }
 }

@@ -1,8 +1,8 @@
-﻿using _4Create.Entities.Base;
+﻿using _4Create.Entities.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace _4Create.Entities
+namespace _4Create.Entities.Abstractions
 {
     /// <summary>
     /// Abstract class for applicaton's users
@@ -23,7 +23,8 @@ namespace _4Create.Entities
         [Required(ErrorMessage = "Email is required")]
         [StringLength(128, ErrorMessage = "Email can't be longer than 128 characters.")]
         public string? Email { get; set; }
-       
+        #endregion
+
 
         #region ForeignKeys
         // Adding if ever needed
