@@ -22,7 +22,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using _4Create.Controllers;
-
+using _4Create.Data.Interfaces;
+using _4Create.Services.Interfaces;
+using _4Create.Data.Repositories;
+using _4Create.Services;
+using _4Create.Entities.Models;
+using _4Create.Entities.Utiles;
+using AutoMapper;
 
 namespace _4Create
 {
@@ -32,21 +38,6 @@ namespace _4Create
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            /*
-             * services.ConfigureCors();
-
-            services.ConfigureIISIntegration();
-
-            services.AddDbContext<RepositoryContext>(opts => 
-            opts.UseSqlServer(Configuration["ConnectionString:ESolveDEV"]), 
-            ServiceLifetime.Transient, ServiceLifetime.Transient);
-
-             */
-
-
-
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory) // Set the base path to your application's directory
                 .AddJsonFile("appsettings.json") // Load configuration from appsettings.json
@@ -54,36 +45,36 @@ namespace _4Create
 
             var connectionString = configuration.GetConnectionString("FourCreateConnectionString");
 
-            // Build the service provider
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(connectionString))
-                .BuildServiceProvider();
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+            builder.Services.AddScoped<IRepositoryBase<Employee>, RepositoryBase<Employee>>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            builder.Services.AddSingleton(mapper);
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
 
-
             app.MapControllers();
-
-            //app.MapCompanyEndpoints();
-
             app.Run();
         }
     }

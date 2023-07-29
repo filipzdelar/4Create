@@ -266,3 +266,4 @@ C:\Users\filip\Desktop\Work\4Create\4Create\obj\Debug\net6.0\refint\4Create.dll
 C:\Users\filip\Desktop\Work\4Create\4Create\obj\Debug\net6.0\4Create.pdb
 C:\Users\filip\Desktop\Work\4Create\4Create\obj\Debug\net6.0\4Create.genruntimeconfig.cache
 C:\Users\filip\Desktop\Work\4Create\4Create\obj\Debug\net6.0\ref\4Create.dll
+C:\Users\filip\Desktop\Work\4Create\4Create\bin\Debug\net6.0\AutoMapper.dll

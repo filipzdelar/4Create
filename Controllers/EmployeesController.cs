@@ -1,7 +1,10 @@
-﻿using _4Create.Entities.Models;
+﻿using _4Create.Data.Repositories;
+using _4Create.Entities.Dtos;
+using _4Create.Entities.Models;
+using _4Create.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Net;
 
 namespace _4Create.Controllers
 {
@@ -10,42 +13,64 @@ namespace _4Create.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly ILogger<EmployeesController> _logger;
+        private readonly IEmployeeService _employeeService;
+        private readonly IMapper _mapper;
 
-        public EmployeesController(ILogger<EmployeesController> logger)
+        public EmployeesController(ILogger<EmployeesController> logger, IEmployeeService employeeService, IMapper mapper)
         {
             _logger = logger;
+            _employeeService = employeeService;
+            _mapper = mapper;
         }
 
-        // GET: api/EmployeesController
+        /*
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Employee> Get()
         {
-            return new string[] { "value1", "value2" };
-        }
+            var employees = _employeeService.GetAllEmployees();
+            return employees;
+        }*/
 
-        // GET api/EmployeesController/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST api/EmployeesController
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> CreateEmployeeAsync([FromBody] EmployeeDto employeeDto)
         {
-           // _logger.LogInformation($"New employee with email '{employee.Email}' and title '{employee.Title}' was created.");
-            //return Ok(employee);
+            try
+            {
+                // Perform validation if required.
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+
+                var newEmployee = _mapper.Map<Employee>(employeeDto);
+
+                // Call the service method to create the employee.
+                var createdEmployee = await _employeeService.CreateEmployeeAsync(newEmployee);
+
+
+                // You can return the created employee or just an OK response.
+                // Adjust the response based on your API design requirements.
+                return Ok(createdEmployee);
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the employee.");
+            }
 
         }
 
-        // PUT api/EmployeesController/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/EmployeesController/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
