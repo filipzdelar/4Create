@@ -12,9 +12,13 @@ namespace _4Create.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            //base.OnModelCreating(modelBuilder);
 
-
+            modelBuilder.Entity<Employee>()
+                .HasMany(employee => employee.Companies)
+                .WithMany(companies => companies.Employees)
+            .   UsingEntity(j => j.ToTable("EmployeeCompany"));
+            //modelBuilder.Entity<Company>();
             //modelBuilder.Entity<Employee>().ToTable("Tests");
             //modelBuilder.Entity<Company>().ToTable("Attempts");
 
