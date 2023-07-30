@@ -1,49 +1,61 @@
 ﻿using _4Create.Data.Interfaces;
+using _4Create.Entities.Enums;
 using _4Create.Entities.Interfaces;
 using _4Create.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace _4Create.Data.Repositories
 {
-    public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : Employee
+    public class EmployeeRepository : IEmployeeRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public RepositoryBase(ApplicationDbContext dbContext)
+        public EmployeeRepository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<TEntity> GetByIdAsync(long id)
+        public async Task<Employee> GetByIdAsync(long id)
         {
-            return await _dbContext.Set<TEntity>().FindAsync(id);
+            return await _dbContext.Set<Employee>().FindAsync(id);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public async Task<bool> IsEmailUnique(string email)
         {
-            return await _dbContext.Set<TEntity>().ToListAsync();
+            return await _dbContext.Employees.AllAsync(e => e.Email != email);
         }
 
-        public async Task AddAsync(TEntity entity)
+        public async Task<bool> EmployeeExistsByTitleAndCompanyIdsAsync(Title title, List<long> companyIds)
         {
-            await _dbContext.Set<TEntity>().AddAsync(entity);
+            return await _dbContext.Employees.AnyAsync(e => e.Title == title && e.Companies.Any(ec => companyIds.Contains(ec.Id)));
         }
 
-        public async Task UpdateAsync(TEntity entity)
+        public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            _dbContext.Set<TEntity>().Update(entity);
-            await Task.CompletedTask; // Or simply return Task.CompletedTask;
+            return await _dbContext.Set<Employee>().ToListAsync();
         }
 
-        public async Task DeleteAsync(TEntity entity)
+        public async Task AddAsync(Employee entity)
         {
-            _dbContext.Set<TEntity>().Remove(entity);
-            await Task.CompletedTask; // Or simply return Task.CompletedTask;
+            await _dbContext.Set<Employee>().AddAsync(entity);
+        }
+
+        public async Task UpdateAsync(Employee entity)
+        {
+            _dbContext.Set<Employee>().Update(entity);
+            await Task.CompletedTask; 
+        }
+
+        public async Task DeleteAsync(Employee entity)
+        {
+            _dbContext.Set<Employee>().Remove(entity);
+            await Task.CompletedTask; 
         }
 
         public async Task SaveChangesAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
+
     }
 }

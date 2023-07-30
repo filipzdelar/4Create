@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Security.AccessControl;
 using _4Create.Entities.Interfaces;
+using _4Create.Entities.Enums;
 
 namespace _4Create.Entities.Models
 {
@@ -27,5 +27,9 @@ namespace _4Create.Entities.Models
         [Required(ErrorMessage = "Comment is required.")]
         [StringLength(200, ErrorMessage = "Comment can't be longer than 200 characters.")]
         public string? Comment { get; set; }
+
+        [Required(ErrorMessage = "Attributes are required.")]
+        [StringLength(2000, ErrorMessage = "Attributes can't be longer than 2000 characters.")]
+        public string? ResourceAttributes { get; set; }
     }
 }

@@ -1,16 +1,21 @@
 ﻿using _4Create.Data.Interfaces;
+using _4Create.Entities.Dtos;
+using _4Create.Entities.Enums;
 using _4Create.Entities.Models;
 using _4Create.Services.Interfaces;
+using AutoMapper;
 
 namespace _4Create.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IRepositoryBase<Employee> _employeeRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IMapper _mapper;
 
-        public EmployeeService(IRepositoryBase<Employee> employeeRepository)
+        public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper)
         {
-            _employeeRepository = employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
+            _employeeRepository = employeeRepository;
+            _mapper = mapper;
         }
 
         /*
@@ -53,12 +58,28 @@ namespace _4Create.Services
         }
         */
 
-        public async Task<Employee> CreateEmployeeAsync(Employee newEmployee)
+        public async Task<Employee> CreateEmployeeAsync(EmployeeDto newEmployeeDto)
         {
+            var newEmployee = _mapper.Map<Employee>(newEmployeeDto);
             await _employeeRepository.AddAsync(newEmployee);
             await _employeeRepository.SaveChangesAsync();
 
             return newEmployee;
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email)
+        {
+            return await _employeeRepository.IsEmailUnique(email);
+        }
+
+        public async Task<bool> IsTitleUniqueWithinCompanyAsync(Title title, List<long> companyIds)
+        {
+            if(title.Equals(Title.Developer))
+            {
+                return true;
+            }
+
+            return await _employeeRepository.EmployeeExistsByTitleAndCompanyIdsAsync(title, companyIds);
         }
 
     }

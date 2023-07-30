@@ -16,26 +16,20 @@ namespace _4Create.Entities.Models
         public long Id { get; set; }
         public DateTime CreatedAt { get; set; }
 
-
-        [Required(ErrorMessage = "Name is required.")]
-        [StringLength(200, ErrorMessage = "Firstname can't be longer than 200 characters.")]
-        public Title Title { get; set; }
-
         [Required(ErrorMessage = "Email is required.")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid email format.")]
-        public string Email { get; set; }
+        [StringLength(128, ErrorMessage = "Name can't be longer than 128 characters.")]
+        public string Name { get; set; }
 
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();
 
 
         public Company() { }
 
-        public Company(long Id, DateTime CreatedAt, Title Title, string Email) 
+        public Company(long Id, DateTime CreatedAt, string Name) 
         { 
             this.Id = Id; 
             this.CreatedAt = CreatedAt; 
-            this.Title = Title;
-            this.Email = Email;
+            this.Name = Name;
         }
     }
 }

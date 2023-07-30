@@ -47,7 +47,12 @@ namespace _4Create
 
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-            builder.Services.AddScoped<IRepositoryBase<Employee>, RepositoryBase<Employee>>();
+            //builder.Services.AddScoped<IRepositoryBase<Employee>, RepositoryBase<Employee>>();
+
+            builder.Services.AddScoped<ISystemLogRepository, SystemLogRepository>();
+            builder.Services.AddScoped<ISystemLogService, SystemLogService>();
+
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
             var mapperConfig = new MapperConfiguration(mc =>

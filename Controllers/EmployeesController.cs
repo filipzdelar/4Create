@@ -14,13 +14,13 @@ namespace _4Create.Controllers
     {
         private readonly ILogger<EmployeesController> _logger;
         private readonly IEmployeeService _employeeService;
-        private readonly IMapper _mapper;
+        private readonly ISystemLogService _systemLogService;
 
-        public EmployeesController(ILogger<EmployeesController> logger, IEmployeeService employeeService, IMapper mapper)
+        public EmployeesController(ILogger<EmployeesController> logger, IEmployeeService employeeService, ISystemLogService systemLogService)
         {
             _logger = logger;
             _employeeService = employeeService;
-            _mapper = mapper;
+            _systemLogService = systemLogService;
         }
 
         /*
@@ -31,33 +31,36 @@ namespace _4Create.Controllers
             return employees;
         }*/
 
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         [HttpPost]
         public async Task<IActionResult> CreateEmployeeAsync([FromBody] EmployeeDto employeeDto)
         {
             try
             {
-                // Perform validation if required.
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
+                // Check if the employee email is unique.
+                if (!await _employeeService.IsEmailUniqueAsync(employeeDto.Email))
+                {
+                    return Conflict("Employee email must be unique.");
+                }
 
-                var newEmployee = _mapper.Map<Employee>(employeeDto);
+                // Check if the employee title is unique within the company.
+                if (!await _employeeService.IsTitleUniqueWithinCompanyAsync(employeeDto.Title, employeeDto.CompanyIds))
+                {
+                    return Conflict("Employee title must be unique within the company.");
+                }
 
-                // Call the service method to create the employee.
-                var createdEmployee = await _employeeService.CreateEmployeeAsync(newEmployee);
+                // Create a new employee and add it to the specified companies.
+                var createdEmployee = await _employeeService.CreateEmployeeAsync(employeeDto);
 
+                // Log the creation of the new employee.
+                await _systemLogService.LogNewEmployeeCreationAsync(createdEmployee);
 
-                // You can return the created employee or just an OK response.
-                // Adjust the response based on your API design requirements.
-                return Ok(createdEmployee);
+                // Return a 201 Created response with the created resource and the Location header.
+                return Ok("New employee with email " + createdEmployee.Email + " has been created");
             }
             catch (Exception)
             {
