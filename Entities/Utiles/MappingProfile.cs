@@ -8,7 +8,14 @@ namespace _4Create.Entities.Utiles
     {
         public MappingProfile()
         {
-            CreateMap<EmployeeDto, Employee>();
+            CreateMap<Employee, EmployeeDto>().PreserveReferences();
+            CreateMap<Company, CompanyDto>().PreserveReferences();
+            CreateMap<CompanyDto, Company>().ForMember(dest => dest.Employees, opt => opt.Ignore()); ; // Add this mapping configuration
+
+
+            CreateMap<EmployeeToCreateDto, Employee>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id)) // Map Id property
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
         }
     }
 }

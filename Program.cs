@@ -29,6 +29,8 @@ using _4Create.Services;
 using _4Create.Entities.Models;
 using _4Create.Entities.Utiles;
 using AutoMapper;
+using NuGet.Protocol.Core.Types;
+using System.Text.Json.Serialization;
 
 namespace _4Create
 {
@@ -55,6 +57,9 @@ namespace _4Create
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
+            builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
+
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new MappingProfile());
@@ -64,7 +69,11 @@ namespace _4Create
 
             builder.Services.AddSingleton(mapper);
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 

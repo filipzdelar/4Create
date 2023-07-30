@@ -1,44 +1,52 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using _4Create.Data.Repositories;
+using _4Create.Entities.Dtos;
+using _4Create.Entities.Models;
+using _4Create.Services;
+using _4Create.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace _4Create.Controllers
 {
-    // api/CompaniesController
     [Route("api/[controller]")]
     [ApiController]
     public class CompaniesController : ControllerBase
     {
-        // GET: api/<CompaniesController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly ILogger<CompaniesController> _logger;
+        private readonly ICompanyService _companyService; 
+        private readonly ISystemLogService _systemLogService;
+
+
+        public CompaniesController(ILogger<CompaniesController> logger, ICompanyService companyService, ISystemLogService systemLogService)
         {
-            return new string[] { "value1", "value2" };
+            _logger = logger;
+            _companyService = companyService;
+            _systemLogService = systemLogService;
         }
 
-        // GET api/<CompaniesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CompaniesController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> CreateCompanyAsync([FromBody] CompanyDto companyDto)
         {
-        }
+            //try
+            //{
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-        // PUT api/<CompaniesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+                var newCompany = await _companyService.CreateCompanyAsync(companyDto);
 
-        // DELETE api/<CompaniesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+                // Log the creation of the new employee.
+                await _systemLogService.LogNewCompanyAndEmployeesCreationAsync(newCompany);
+
+
+                return Ok(newCompany);
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "An error occurred while creating the company.");
+            //    return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the company.");
+            //}
         }
     }
 }

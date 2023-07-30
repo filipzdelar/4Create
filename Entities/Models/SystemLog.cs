@@ -20,10 +20,6 @@ namespace _4Create.Entities.Models
         [StringLength(200, ErrorMessage = "Event can't be longer than 200 characters.")]
         public string? Event { get; set; }
 
-        [Required(ErrorMessage = "Changeset is required.")]
-        [StringLength(200, ErrorMessage = "Changeset can't be longer than 40 characters.")]
-        public string? Changeset { get; set; }
-
         [Required(ErrorMessage = "Comment is required.")]
         [StringLength(200, ErrorMessage = "Comment can't be longer than 200 characters.")]
         public string? Comment { get; set; }
