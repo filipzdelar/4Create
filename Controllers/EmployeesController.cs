@@ -26,8 +26,8 @@ namespace _4Create.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEmployeeAsync([FromBody] EmployeeDto employeeDto)
         {
-            //try
-            //{
+            try
+            {
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
@@ -53,12 +53,12 @@ namespace _4Create.Controllers
 
                 // Return a 201 Created response with the created resource and the Location header.
                 return Ok("New employee with email " + createdEmployee.Email + " has been created");
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, "An error occurred while creating the employee.");
-            //    return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the employee.");
-            //}
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating the employee.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the employee.");
+            }
         }
     }
 }
