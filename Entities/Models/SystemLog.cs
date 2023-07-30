@@ -7,7 +7,7 @@ namespace _4Create.Entities.Models
 {
     public class SystemLog : IEntity, ICreaction
     {
-
+        #region Properties
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -27,5 +27,6 @@ namespace _4Create.Entities.Models
         [Required(ErrorMessage = "Attributes are required.")]
         [StringLength(2000, ErrorMessage = "Attributes can't be longer than 2000 characters.")]
         public string? ResourceAttributes { get; set; }
+        #endregion
     }
 }

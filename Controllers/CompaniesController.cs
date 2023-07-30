@@ -19,16 +19,16 @@ namespace _4Create.Controllers
 
         public CompaniesController(ILogger<CompaniesController> logger, ICompanyService companyService, ISystemLogService systemLogService)
         {
-            _logger = logger;
-            _companyService = companyService;
-            _systemLogService = systemLogService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _companyService = companyService ?? throw new ArgumentNullException(nameof(companyService));
+            _systemLogService = systemLogService ?? throw new ArgumentNullException(nameof(systemLogService));
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCompanyAsync([FromBody] CompanyDto companyDto)
         {
-            //try
-            //{
+            try
+            {
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
@@ -41,12 +41,12 @@ namespace _4Create.Controllers
 
 
                 return Ok(newCompany);
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, "An error occurred while creating the company.");
-            //    return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the company.");
-            //}
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating the company.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the company.");
+            }
         }
     }
 }

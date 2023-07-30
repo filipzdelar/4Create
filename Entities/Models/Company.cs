@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using _4Create.Data;
 using System.Data;
 using _4Create.Migrations;
-using _4Create.Entities.Models.Middle;
 
 namespace _4Create.Entities.Models
 {
@@ -13,6 +12,7 @@ namespace _4Create.Entities.Models
     [Table("Companies")]
     public class Company : IEntity, ICreaction
     {
+        #region Properties
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -21,12 +21,15 @@ namespace _4Create.Entities.Models
         [Required(ErrorMessage = "Email is required.")]
         [StringLength(128, ErrorMessage = "Name can't be longer than 128 characters.")]
         public string Name { get; set; }
+        #endregion
 
-
+        #region Navigation
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();
+        #endregion
 
-
-        public Company() { }
+        #region Constructor's
+        public Company()
+        { }
 
         public Company(long Id, DateTime CreatedAt, string Name, ICollection<Employee> Employees) 
         { 
@@ -35,5 +38,6 @@ namespace _4Create.Entities.Models
             this.Name = Name;
             this.Employees = Employees;
         }
+        #endregion
     }
 }

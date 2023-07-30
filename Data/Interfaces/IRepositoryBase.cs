@@ -11,13 +11,5 @@ namespace _4Create.Data.Interfaces
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(TEntity entity);
         Task SaveChangesAsync();
-
-        /*
-        TEntity GetById(long id);
-        IEnumerable<TEntity> GetAll();
-        void Add(TEntity employee);
-        void Update(TEntity employee);
-        void Delete(TEntity employee);
-        void SaveChanges();*/
     }
 }

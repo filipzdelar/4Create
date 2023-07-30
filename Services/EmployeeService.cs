@@ -1,9 +1,13 @@
 ﻿using _4Create.Data.Interfaces;
+using _4Create.Data.Repositories;
 using _4Create.Entities.Dtos;
 using _4Create.Entities.Enums;
 using _4Create.Entities.Models;
 using _4Create.Services.Interfaces;
 using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace _4Create.Services
 {
@@ -11,76 +15,70 @@ namespace _4Create.Services
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
+        private ICompanyRepository _companyRepository;
 
-        public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmployeeService"/> class.
+        /// </summary>
+        public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper, ICompanyRepository companyRepository)
         {
-            _employeeRepository = employeeRepository;
-            _mapper = mapper;
+            _employeeRepository = employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _companyRepository = companyRepository ?? throw new ArgumentNullException(nameof(companyRepository));
         }
 
-        /*
-        public IEnumerable<Employee> GetAllEmployees()
-        {
-            return _employeeRepository.GetAll();
-        }
-
-        public Employee GetEmployeeById(int id)
-        {
-            return _employeeRepository.GetById(id);
-        }
-
-        public void AddEmployee(Employee employee)
-        {
-            // Add any additional business logic here before saving
-            _employeeRepository.Add(employee);
-            _employeeRepository.SaveChanges();
-        }
-
-        public void UpdateEmployee(Employee employee)
-        {
-            // Add any additional business logic here before updating
-            _employeeRepository.Update(employee);
-            _employeeRepository.SaveChanges();
-        }
-
-        public void DeleteEmployee(int id)
-        {
-            var employee = _employeeRepository.GetById(id);
-            if (employee == null)
-            {
-                // Optionally, handle the case when the employee with the specified ID is not found.
-                throw new ArgumentException("Employee not found.", nameof(id));
-            }
-
-            // Add any additional business logic here before deleting
-            _employeeRepository.Delete(employee);
-            _employeeRepository.SaveChanges();
-        }
-        */
-
+        /// <summary>
+        /// Creates a new employee based on the provided EmployeeDto.
+        /// </summary>
+        /// <param name="newEmployeeDto">The EmployeeDto containing employee details.</param>
+        /// <returns>The newly created Employee object.</returns>
         public async Task<Employee> CreateEmployeeAsync(EmployeeDto newEmployeeDto)
         {
             var newEmployee = _mapper.Map<Employee>(newEmployeeDto);
+
+            // Associate the employee with the specified companies
+            foreach (var companyId in newEmployeeDto.CompanyIds)
+            {
+                var company = await _companyRepository.GetByIdAsync(companyId);
+                if (company != null)
+                {
+                    newEmployee.Companies.Add(company);
+                }
+            }
+
             await _employeeRepository.AddAsync(newEmployee);
             await _employeeRepository.SaveChangesAsync();
 
             return newEmployee;
         }
 
-        public async Task<bool> IsEmailUniqueAsync(string email)
+        /// <summary>
+        /// Checks if the given email is unique among employees.
+        /// </summary>
+        /// <param name="email">The email to check for uniqueness.</param>
+        public async Task<bool> IsEmailUniqueAsync(string? email)
         {
+            if (email == null)
+            {
+                return false;
+            }
+
             return await _employeeRepository.IsEmailUnique(email);
         }
 
+        /// <summary>
+        /// Checks if manager or tester aleardy exists within the specified company IDs.
+        /// </summary>
+        /// <param name="title">The employee title to check for uniqueness.</param>
+        /// <param name="companyIds">The list of company IDs to check for title uniqueness.</param>
+        /// <returns>True if the title is unique within the specified companies, otherwise false.</returns>
         public async Task<bool> IsTitleUniqueWithinCompanyAsync(Title title, List<long> companyIds)
         {
-            if(title.Equals(Title.Developer))
+            if (title.Equals(Title.Developer))
             {
-                return true;
+                return false;
             }
-
             return await _employeeRepository.EmployeeExistsByTitleAndCompanyIdsAsync(title, companyIds);
         }
-
     }
 }

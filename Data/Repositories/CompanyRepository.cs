@@ -30,7 +30,7 @@ namespace _4Create.Data.Repositories
 
         public Task UpdateAsync(Company entity)
         {
-            // No need to explicitly update companies since Entity Framework will track changes.
+            // TODO
             return Task.CompletedTask;
         }
 
