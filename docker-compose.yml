@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  4create.queryservice:
+    image: ${DOCKER_REGISTRY-}4createqueryservice
+    build:
+      context: .
+      dockerfile: 4Create.QueryService/Dockerfile
+    ports:
+      - "8080:80"  # Host port 8080 maps to container port 80
+
+  4create:
+    image: ${DOCKER_REGISTRY-}4create
+    build:
+      context: .
+      dockerfile: 4Create/Dockerfile
+    ports:
+      - "8081:80"  # Host port 8081 maps to container port 80
